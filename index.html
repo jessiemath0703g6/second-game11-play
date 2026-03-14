@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Jessie Math捷析 - 圓形祭壇掃描</title>
+
+  <meta name="description" content="© 2025–2026 Jessie Math 捷析老師. All rights reserved.">
+  <meta property="og:title" content="Jessie Math捷析 - 圓形祭壇掃描">
+  <meta property="og:description" content="© 2025–2026 捷析 Math 捷析老師. All rights reserved.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="g6-u11-2.png">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1536">
+  <meta property="og:image:alt" content="Jessie Math 遊戲封面">
+  <link rel="image_src" href="g6-u11-2.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jessie Math捷析 - 圓形祭壇掃描">
+  <meta name="twitter:description" content="© 2025–2026 Jessie Math 捷析老師. All rights reserved.">
+  <meta name="twitter:image" content="g6-u11-2.png">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #d97706;      
+      --primary-dark: #b45309;
+      --accent: #10b981;       
+      --bg: #e6ccb2;           
+      --bg2: #ddb892;          
+      --card-bg: rgba(60, 42, 33, 0.9);
+      --text: #f8fafc;
+      --radius: 24px;
+      --heroH: 78px;
+    }
+
+    /* 加入 user-select: none 防止整個畫面文字被反白拖曳 */
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+    /* 允許輸入框可以正常選取與輸入 */
+    input { user-select: auto; -webkit-user-select: auto; }
+
+    html, body{
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      font-family: 'Inter', 'Noto Sans TC', sans-serif;
+      color: var(--text);
+      overflow: hidden;
+      background-color: var(--bg);
+    }
+
+    @keyframes violentShake {
+      0% { transform: translate(2px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(3px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(3px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(1px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+    .shake-active {
+      animation: violentShake 0.4s infinite;
+      filter: sepia(0.8) hue-rotate(-30deg) saturate(2); 
+    }
+
+    #orientationWarning {
+      display: none; position: fixed; inset: 0; z-index: 99999;
+      background: #0b0f19; flex-direction: column; align-items: center; justify-content: center;
+      color: white; text-align: center; padding: 20px;
+    }
+    #orientationWarning i { font-size: 50px; color: #facc15; margin-bottom: 20px; animation: rotatePhone 2s infinite ease-in-out; }
+    @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
+    @media screen and (max-width: 767px) and (orientation: portrait) {
+      #orientationWarning { display: flex; }
+      #appFrame, .herobar, footer { display: none !important; }
+    }
+
+    /* Hero 區 */
+    .herobar{
+      position: fixed; top: 0; left: 0; right: 0; height: var(--heroH); z-index: 2005;
+      background: linear-gradient(rgba(255,255,255,0.65), rgba(255,255,255,0.75)), url('jessie logo.jpg') center/cover no-repeat;
+      border-bottom: 1px solid rgba(15,23,42,0.08); backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; gap: 14px;
+    }
+    .hero-left{ display: flex; align-items: center; gap: 12px; min-width: 180px; }
+    .hero-avatar{ 
+      width: 48px; height: 48px; border-radius: 999px; 
+      border: 3px solid #facc15; background: transparent; 
+      object-fit: cover; flex: 0 0 auto; 
+    }
+    .hero-brand{ font-weight: 900; font-size: 28px; letter-spacing: 0.2px; color: #0f172a; line-height: 1; white-space: nowrap; }
+    
+    .hero-nav{ display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+    .hero-btn{
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px; text-decoration: none; font-weight: 800; color: #0f172a;
+      background: rgba(255,255,255,0.9); border: 1px solid rgba(15,23,42,0.12); box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: all .15s ease; white-space: nowrap; font-size: 14px;
+    }
+    .hero-btn i{ color: #d97706; }
+    .hero-btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+    .hero-btn.is-active{ border-color: rgba(217,119,6,0.75); box-shadow: 0 6px 16px rgba(217,119,6,0.15); color: #1e293b; }
+
+    #appFrame{ position: fixed; top: var(--heroH); left: 0; right: 0; bottom: 0; width: 100vw; height: calc(100vh - var(--heroH)); overflow: hidden; }
+
+    /* 登入與排行榜 */
+    #loginPage {
+      position: absolute; inset: 0; z-index: 1000;
+      background: radial-gradient(circle at center, rgba(60,42,33,0.95) 0%, rgba(26,18,14,1) 100%);
+      display: flex; align-items: center; justify-content: center; transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+      overflow-y: auto; padding: 20px;
+    }
+    .login-wrapper { display: flex; gap: 20px; max-width: 1000px; width: 100%; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+    .login-card {
+      background: var(--card-bg); backdrop-filter: blur(20px); padding: 30px; border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.08); text-align: center; width: min(400px, 100%); flex: 1 1 350px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    .login-card h1 { font-size: 26px; margin-bottom: 10px; font-weight: 900; color: #facc15; }
+    .rules-box {
+      background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; font-size: 13px; color: #cbd5e1; text-align: left; margin-bottom: 20px; border: 1px dashed rgba(217,119,6,0.3); line-height: 1.6;
+    }
+    .rules-box b { color: #facc15; }
+    input[type="text"] {
+      width: 100%; padding: 16px; border-radius: 12px; border: 2px solid #574636; background: rgba(0,0,0,0.5); color: white; font-size: 16px; margin-bottom: 20px; outline: none; text-align: center;
+    }
+    input[type="text"]:focus { border-color: var(--primary); }
+
+    .board-card {
+      background: var(--card-bg); backdrop-filter: blur(20px); padding: 30px; border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.08); width: min(550px, 100%); flex: 2 1 450px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); max-height: 60vh; overflow-y: auto;
+    }
+    .board-card h2 { font-size: 22px; margin-top: 0; color: #f8fafc; border-bottom: 2px solid #574636; padding-bottom: 10px;}
+    .rank-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+    .rank-table th { color: #94a3b8; padding: 10px 5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .rank-table td { padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
+
+    /* 遊戲主介面 */
+    #gamePage { width: 100%; height: 100%; opacity: 0; position: relative; }
+    .viewport { position: absolute; inset: 0; background: transparent; overflow: hidden; }
+    canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+
+    /* 頂部 HUD */
+    .top-hud {
+      position: absolute; top: 15px; right: 20px; z-index: 100;
+      display: flex; gap: 15px; pointer-events: none;
+    }
+    .hud-box {
+      background: rgba(60,42,33,0.85); padding: 10px 20px; border-radius: 99px;
+      border: 2px solid #d97706; color: white; font-weight: 800; font-size: 18px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+    }
+    .hud-box span { color: #facc15; }
+
+    /* 左下角與右下角控制選單 */
+    .bottom-controls-left {
+      position: absolute; left: 20px; bottom: 70px; z-index: 100;
+      display: flex; gap: 10px; flex-wrap: wrap; max-width: 50%;
+    }
+    .bottom-controls-right {
+      position: absolute; right: 20px; bottom: 70px; z-index: 100;
+      display: flex; gap: 10px; flex-wrap: wrap; max-width: 50%; justify-content: flex-end;
+    }
+    
+    .btn {
+      padding: 12px 18px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; font-family: inherit; font-size: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-outline { background: rgba(60,42,33,0.9); color: white; border: 1px solid #78533c; backdrop-filter: blur(5px); }
+    .btn-outline:hover { background: #573a28; transform: translateY(-2px); }
+    .btn-success { background: #10b981; color: white; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-wb-active { background: #facc15 !important; color: #0f172a !important; font-weight: 900; }
+
+    /* 計算白板 */
+    #whiteboard {
+      position: absolute; inset: 0; z-index: 80; pointer-events: none;
+      background-color: transparent;
+    }
+
+    /* 視窗覆蓋層 */
+    .overlay {
+      position: absolute; inset: 0; background: rgba(26,18,14,0.65); backdrop-filter: blur(3px);
+      display: flex; align-items: center; justify-content: center; z-index: 70; display: none;
+    }
+    #qModal { align-self: flex-start; margin-top: 60px; pointer-events: auto; }
+    
+    .modal {
+      background: var(--card-bg); padding: 30px; border-radius: 30px; width: min(450px, 92%); text-align: center;
+      border: 1px solid rgba(217,119,6,0.3); box-shadow: 0 25px 60px rgba(0,0,0,0.6); position: relative;
+    }
+    .modal h2{ margin: 0 0 10px; font-size: 22px; font-weight: 900; color: #facc15; }
+    .modal p{ margin: 0 0 14px; color: #cbd5e1; font-size: 15px; line-height: 1.7; }
+    
+    .badge-img { width: 150px; height: auto; border-radius: 15px; margin: 15px auto; display: block; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .feedback-icon { font-size: 55px; margin-bottom: 15px; }
+    .correct { color: #10b981; }
+    .wrong { color: #ef4444; }
+
+    /* Footer */
+    footer{ position: fixed; left: 0; right: 0; bottom: 8px; z-index: 45; padding: 0 14px; pointer-events: none; }
+    .footer-pill{
+      margin: 0 auto; width: min(980px, 100%); display:flex; justify-content: space-between; align-items:center; gap: 14px; padding: 10px 14px; border-radius: 999px;
+      background: rgba(30,24,18,0.4); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px);
+    }
+    .footer-left, .footer-right{ display:flex; align-items:center; gap: 10px; min-width: 0; }
+    .footer-dot{ width: 8px; height: 8px; border-radius: 999px; background: rgba(217,119,6,0.95); box-shadow: 0 0 0 4px rgba(217,119,6,0.16); flex: 0 0 auto; }
+    .footer-copy{ color: #e5e7eb; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .footer-icon{ width: 26px; height: 26px; border-radius: 50%; display:grid; place-items:center; background: rgba(217,119,6,0.18); color: #facc15; font-size: 12px; }
+    .footer-tagline{ color: #cbd5e1; font-size: 12px; font-weight: 700; white-space: nowrap; }
+
+    @media (max-width: 800px) {
+      :root{ --heroH: 66px; }
+      .hero-nav { display: none; }
+      .hero-btn span { display: none; }
+      .hero-brand { font-size: 20px; }
+      .bottom-controls-left { bottom: 20px; left: 10px; }
+      .bottom-controls-right { bottom: 20px; right: 10px; }
+      .btn { padding: 10px 14px; font-size: 13px; }
+      footer{ display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="orientationWarning">
+    <i class="fa-solid fa-mobile-screen"></i>
+    <h2>請旋轉您的設備</h2>
+    <p>探測儀需要橫向畫面以發揮最大效能，<br>請將手機轉為橫向以繼續任務。</p>
+  </div>
+
+  <header class="herobar">
+    <div class="hero-left">
+      <img class="hero-avatar" src="JESSIEMATH-Q.png" alt="Jessie Math" />
+      <div class="hero-brand">Jessie Math捷析</div>
+    </div>
+    <nav class="hero-nav">
+      <a class="hero-btn" href="https://jessiemath0703-chu.github.io/website2/" target="_self">
+        <i class="fa-solid fa-house"></i><span>首頁</span>
+      </a>
+      <a class="hero-btn" href="https://jessiemath0703-chu.github.io/Game-Lobby/" target="_self">
+        <i class="fa-solid fa-gamepad"></i><span>遊戲大廳</span>
+      </a>
+      <a class="hero-btn is-active" href="https://jessiemath0703-chu.github.io/Game-Lobby/#g6-u11" target="_self">
+        <i class="fa-solid fa-backward"></i><span>圓面積與扇形面積</span>
+      </a>
+    </nav>
+  </header>
+
+  <div id="appFrame">
+    <div id="loginPage">
+      <div class="login-wrapper">
+        <div class="login-card">
+          <div style="font-size: 50px; margin-bottom: 10px;">🏺</div>
+          <h1>埃及文物探測</h1>
+          <p>潛入沙土遺跡，在崩塌前搶救珍貴物資</p>
+          
+          <div class="rules-box">
+            <b>【任務守則】</b><br>
+            1. 點擊沙土中飄浮的埃及文物進行掃描。<br>
+            2. 計算 <b>圓面積</b>、<b>圓周長</b>、<b>扇形</b> 或反推數值。<br>
+            3. 備有<b>透明白板</b>，可直接在畫面上計算！<br>
+            4. <b>限時 120 秒</b>，成功搶救 <b>7 個文物</b> 即過關，可在時間內持續收集！<br>
+            <span style="color:#ef4444;">※ 若時間結束時未達標準，文物將被震碎！</span>
+          </div>
+
+          <input type="text" id="userName" placeholder="請輸入探測員代號..." maxlength="10">
+          <button class="btn btn-primary" style="width: 100%; font-size:16px;" onclick="startGame()">啟動任務</button>
+        </div>
+
+        <div class="board-card">
+          <h2>🏆 探測菁英榜</h2>
+          <table class="rank-table">
+            <thead>
+              <tr><th>名次</th><th>玩家</th><th>搜取物資數</th><th>狀態</th><th>日期</th></tr>
+            </thead>
+            <tbody id="homeRankList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="gamePage">
+      <div class="top-hud">
+        <div class="hud-box">崩塌倒數: <span id="timeText" style="color:#ef4444;">120</span>s</div>
+        <div class="hud-box">已搶救: <span id="scoreText">0 / 7</span></div>
+      </div>
+
+      <div class="bottom-controls-left">
+        <button class="btn btn-outline" onclick="backToMenu()"><i class="fa-solid fa-list"></i> 回主選單</button>
+        <button class="btn btn-outline" id="wbToggleBtn" onclick="toggleWhiteboard()"><i class="fa-solid fa-pen"></i> 白板</button>
+        <button class="btn btn-outline" onclick="toggleAudio()"><i id="audioIcon" class="fa-solid fa-volume-high"></i> 音效</button>
+      </div>
+
+      <div class="bottom-controls-right">
+        <button class="btn btn-outline" onclick="togglePause()"><i id="pauseIcon" class="fa-solid fa-pause"></i> <span id="pauseText">暫停</span></button>
+        <button class="btn btn-outline" onclick="location.reload()"><i class="fa-solid fa-rotate-right"></i> 重新開始</button>
+      </div>
+
+      <main class="viewport" id="viewportArea">
+        <canvas id="cv"></canvas>
+        <canvas id="whiteboard"></canvas>
+
+        <div class="overlay" id="gameOverlay">
+          
+          <div class="modal" id="qModal" style="display: none;">
+            <h2 id="qLabel">分析文物數據...</h2>
+            <p id="qDesc" style="color: #facc15; font-weight: bold; font-size: 16px;"></p>
+            <p style="font-size: 13px;">(點擊左下角「白板」可全螢幕塗鴉，不影響輸入)</p>
+            <input type="number" id="ansInput" style="width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 22px; margin-bottom: 20px; outline: none; background: #e2e8f0; color: #0f172a; text-align:center; font-weight: bold;" placeholder="請輸入數值">
+            <button class="btn btn-primary" style="width: 100%; font-size: 16px;" onclick="checkAnswer()">確認挖掘</button>
+          </div>
+
+          <div class="modal" id="feedbackModal" style="display: none;">
+            <div id="fIcon" class="feedback-icon"></div>
+            <h2 id="fTitle"></h2>
+            <p id="fText" style="font-size: 16px; font-weight: bold; margin-bottom: 20px;"></p>
+            <button class="btn btn-primary" style="width: 100%" onclick="closeFeedback()">繼續探測新文物</button>
+          </div>
+
+          <div class="modal" id="resultModal" style="display: none;">
+            <h2 id="rTitle"></h2>
+            <p id="rText"></p>
+            <img id="badgeImg" class="badge-img" src="G6-U11.jpg" alt="徽章" style="display:none;">
+            <button id="rBtn" class="btn btn-primary" style="width: 100%; margin-top:20px;" onclick="location.reload()"></button>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-pill">
+        <div class="footer-left">
+            <div class="footer-dot" aria-hidden="true"></div>
+            <div class="footer-copy">© 2025–2026 Jessie Math 捷析老師. All rights reserved.</div>
+        </div>
+        <div class="footer-right">
+            <div class="footer-icon" aria-hidden="true"><i class="fas fa-compass"></i></div>
+            <div class="footer-tagline">數學不迷路，捷析Jessie帶你走向理解。</div>
+        </div>
+    </div>
+  </footer>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const cv = $('cv'); const ctx = cv.getContext('2d');
+  const wb = $('whiteboard'); const wbCtx = wb.getContext('2d');
+
+  const audioFiles = {
+    bgm: new Audio('1.mp3'),
+    correct: new Audio('2.mp3'),
+    win: new Audio('3.mp3'),
+    wrong: new Audio('4.mp3'),
+    lose: new Audio('5.mp3')
+  };
+  audioFiles.bgm.loop = true;
+  let isMuted = false;
+
+  function toggleAudio() {
+    isMuted = !isMuted;
+    const icon = $('audioIcon');
+    if (isMuted) {
+      audioFiles.bgm.pause(); icon.className = 'fa-solid fa-volume-xmark';
+    } else {
+      if(state.active && !state.gameOver && !state.paused) audioFiles.bgm.play();
+      icon.className = 'fa-solid fa-volume-high';
+    }
+  }
+
+  function playSound(name) {
+    if(!isMuted && audioFiles[name]) {
+      audioFiles[name].currentTime = 0;
+      audioFiles[name].play().catch(e => console.log('Audio play blocked:', e));
+    }
+  }
+
+  let state = {
+    name: '', extracted: 0, target: 7, time: 120,
+    active: false, gameOver: false, paused: false, currentQ: null, targetRelic: null
+  };
+
+  let questionPool = [];
+  let relics = [];
+  let particles = [];
+  let answering = false;
+
+  let isWbActive = false;
+  let isDrawing = false;
+  let lastX = 0, lastY = 0;
+  
+  let isInputting = false;
+  $('ansInput').addEventListener('focus', () => isInputting = true);
+  $('ansInput').addEventListener('blur', () => {
+    setTimeout(() => isInputting = false, 150);
+  });
+
+  loadLeaderboard();
+
+  function loadLeaderboard() {
+    const scores = JSON.parse(localStorage.getItem('relicRank') || '[]');
+    const tbody = $('homeRankList');
+    if(scores.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;">尚無任務紀錄</td></tr>';
+      return;
+    }
+    tbody.innerHTML = scores.slice(0, 10).map((s, i) => {
+      let icon = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🔹';
+      return `<tr>
+        <td>${icon} ${i+1}</td>
+        <td style="font-weight:bold; color:#f8fafc;">${s.name}</td>
+        <td>${s.extracted || 0} 個</td>
+        <td style="color:${s.status==='任務成功'?'#10b981':'#ef4444'};">${s.status}</td>
+        <td>${s.date}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function startGame() {
+    const name = $('userName').value.trim();
+    if (!name) return alert('請輸入探測員代號！');
+
+    state.name = name; 
+    $('loginPage').style.transform = 'translateY(-100%)';
+    $('gamePage').style.opacity = '1';
+
+    setTimeout(() => {
+      state.active = true;
+      initQuestionPool();
+      resize(); initRelics(); 
+      gameLoop(); startTimer();
+      playSound('bgm');
+    }, 600);
+  }
+
+  function backToMenu() {
+    if(confirm('確定要放棄當前任務，回到主選單嗎？')) {
+      location.reload();
+    }
+  }
+
+  function togglePause() {
+    if(state.gameOver || answering) return;
+    state.paused = !state.paused;
+    if(state.paused) {
+      audioFiles.bgm.pause();
+      $('pauseIcon').className = 'fa-solid fa-play';
+      $('pauseText').textContent = '繼續';
+    } else {
+      if(!isMuted) audioFiles.bgm.play();
+      $('pauseIcon').className = 'fa-solid fa-pause';
+      $('pauseText').textContent = '暫停';
+    }
+  }
+
+  function resize() {
+    cv.width = cv.parentElement.clientWidth; cv.height = cv.parentElement.clientHeight;
+    wb.width = cv.width; wb.height = cv.height;
+  }
+  window.addEventListener('resize', resize);
+
+  function initQuestionPool() {
+    questionPool = [];
+    const totalTypes = 13;
+    for(let i=0; i<60; i++) {
+      const r = Math.floor(Math.random() * 28) + 3; 
+      const d = r * 2;
+      const c = (d * 3.14).toFixed(2);
+      const a = (r * r * 3.14).toFixed(2);
+      const semiA = (r * r * 3.14 / 2).toFixed(2);
+      const semiC = (d * 3.14 / 2 + d).toFixed(2);
+      const qA = (r * r * 3.14 / 4).toFixed(2);
+      const q3A = (r * r * 3.14 * 3 / 4).toFixed(2);
+
+      const qType = Math.floor(Math.random() * totalTypes);
+      let ans = 0, desc = '';
+
+      switch(qType) {
+        case 0: ans = a; desc = `測量到圓形文物半徑為 ${r}m。求安全挖掘「面積」？`; break;
+        case 1: ans = a; desc = `測量到圓形文物直徑為 ${d}m。求安全挖掘「面積」？`; break;
+        case 2: ans = c; desc = `文物外圍佈有圓陣，半徑為 ${r}m。求陣法「圓周長」？`; break;
+        case 3: ans = c; desc = `文物外圍佈有圓陣，直徑為 ${d}m。求陣法「圓周長」？`; break;
+        case 4: ans = d; desc = `已知圓形陣法周長為 ${c}m。求陣法的「直徑」？`; break;
+        case 5: ans = r; desc = `已知圓形陣法周長為 ${c}m。求陣法的「半徑」？`; break;
+        case 6: ans = r; desc = `已知圓形文物面積為 ${a} 平方公尺。求文物的「半徑」？`; break;
+        case 7: ans = d; desc = `已知圓形文物面積為 ${a} 平方公尺。求文物的「直徑」？`; break;
+        case 8: ans = semiA; desc = `探測到半圓形遺跡，半徑為 ${r}m。求半圓「面積」？`; break;
+        case 9: ans = semiA; desc = `探測到半圓形遺跡，直徑為 ${d}m。求半圓「面積」？`; break;
+        case 10: ans = semiC; desc = `發現半圓形防護罩，半徑為 ${r}m。求半圓「周長」(含直徑)？`; break;
+        case 11: ans = qA; desc = `挖掘到 1/4 圓的扇形文物，半徑為 ${r}m。求「面積」？`; break;
+        case 12: ans = q3A; desc = `挖掘到 3/4 圓的扇形文物，半徑為 ${r}m。求「面積」？`; break;
+      }
+      questionPool.push({ ans: parseFloat(ans).toString(), desc });
+    }
+    questionPool.sort(() => Math.random() - 0.5); 
+  }
+
+  function getNextQuestion() {
+    if(questionPool.length === 0) {
+      initQuestionPool(); 
+    }
+    return questionPool.pop();
+  }
+
+  function initRelics() {
+    const types = ['🔮', '🪔', '🧮', '🔭', '🧭', '⚖️', '⚙️', '⏳', '🏺', '👑', '💎', '🗿', '🧿', '📿', '📜', '🗝️', '🪙', '🗡️', '🛡️', '🎭', '🪬', '🧩'];
+    relics = Array.from({ length: 12 }, () => ({
+      x: Math.random() * cv.width,
+      y: Math.random() * cv.height,
+      vx: (Math.random() - 0.5) * 1.5,
+      vy: (Math.random() - 0.5) * 1.5,
+      size: Math.random() * 15 + 35,
+      icon: types[Math.floor(Math.random() * types.length)],
+      angle: 0,
+      vAngle: (Math.random() - 0.5) * 0.05,
+      active: true
+    }));
+  }
+
+  function startTimer() {
+    const itv = setInterval(() => {
+      if (!state.active || state.gameOver) { clearInterval(itv); return; }
+      if (answering || state.paused) return; 
+      
+      state.time--;
+      $('timeText').textContent = state.time;
+
+      if (state.time <= 0) {
+        clearInterval(itv);
+        // 判斷是否達到通關標準
+        if (state.extracted >= state.target) {
+            triggerWin();
+        } else {
+            triggerLose();
+        }
+      }
+    }, 1000);
+  }
+
+  function createParticles(x, y, color, isBreak) {
+    for(let i=0; i<35; i++) {
+      particles.push({
+        x: x, y: y,
+        vx: (Math.random()-0.5)*(isBreak?12:7),
+        vy: (Math.random()-0.5)*(isBreak?12:7),
+        life: 1,
+        color: color,
+        size: Math.random() * 6 + 3,
+        isBreak: isBreak
+      });
+    }
+  }
+
+  function gameLoop() {
+    if (!state.active) return;
+
+    if(!state.paused) {
+      const g = ctx.createLinearGradient(0, 0, 0, cv.height);
+      g.addColorStop(0, '#e6ccb2'); 
+      g.addColorStop(1, '#c08d5d');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      ctx.strokeStyle = 'rgba(120,83,60,0.15)';
+      ctx.lineWidth = 1;
+      for(let i=0; i<cv.width; i+=60) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,cv.height); ctx.stroke(); }
+      for(let i=0; i<cv.height; i+=60) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(cv.width,i); ctx.stroke(); }
+
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      relics.forEach(r => {
+        if(!r.active) return;
+        if(!answering && !state.gameOver) {
+          r.x += r.vx; r.y += r.vy; r.angle += r.vAngle;
+          if(r.x < 0 || r.x > cv.width) r.vx *= -1;
+          if(r.y < 0 || r.y > cv.height) r.vy *= -1;
+        }
+        
+        ctx.save();
+        ctx.translate(r.x, r.y);
+        ctx.rotate(r.angle);
+        
+        ctx.beginPath(); ctx.arc(0,0, r.size, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fill();
+        ctx.strokeStyle = 'rgba(217,119,6,0.6)'; ctx.lineWidth=2; ctx.stroke();
+        
+        ctx.font = `${r.size}px Arial`;
+        ctx.fillText(r.icon, 0, 0);
+        ctx.restore();
+      });
+
+      for(let i = particles.length-1; i>=0; i--) {
+        let p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if(p.isBreak) p.vy += 0.3; 
+        p.life -= 0.02;
+        
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = 1;
+        
+        if(p.life <= 0) particles.splice(i, 1);
+      }
+    }
+    requestAnimationFrame(gameLoop);
+  }
+
+  cv.addEventListener('mousedown', (e) => {
+    if (!state.active || answering || state.gameOver || state.paused || isWbActive) return;
+    const rect = cv.getBoundingClientRect();
+    const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
+
+    for(let i=0; i<relics.length; i++) {
+      let r = relics[i];
+      if(!r.active) continue;
+      let dist = Math.hypot(mx - r.x, my - r.y);
+      if(dist < r.size + 15) {
+        state.targetRelic = r;
+        generateQuestion();
+        break;
+      }
+    }
+  });
+
+  function generateQuestion() {
+    answering = true;
+    
+    state.currentQ = getNextQuestion();
+
+    $('qDesc').textContent = state.currentQ.desc;
+    $('ansInput').value = '';
+    
+    isWbActive = false;
+    updateWhiteboardUI();
+    clearWhiteboard();
+
+    $('gameOverlay').style.display = 'flex';
+    $('qModal').style.display = 'block';
+    $('feedbackModal').style.display = 'none';
+    $('resultModal').style.display = 'none';
+    
+    setTimeout(() => { $('ansInput').focus(); }, 100);
+  }
+
+  $('ansInput').addEventListener('keypress', function(e) { if(e.key === 'Enter') checkAnswer(); });
+
+  function checkAnswer() {
+    if (!state.currentQ || !$('ansInput').value) return;
+    const userAns = parseFloat($('ansInput').value);
+    const correctAns = parseFloat(state.currentQ.ans);
+    const isCorrect = isFinite(userAns) && Math.abs(userAns - correctAns) < 0.01;
+
+    $('qModal').style.display = 'none';
+    isWbActive = false; updateWhiteboardUI();
+
+    if(state.targetRelic) {
+      if(isCorrect) {
+        playSound('correct');
+        createParticles(state.targetRelic.x, state.targetRelic.y, '#10b981', false);
+        state.targetRelic.active = false;
+        state.extracted++;
+        $('scoreText').textContent = `${state.extracted} / ${state.target}`;
+        
+        // 時間內可以不斷收集，繼續顯示成功反饋即可
+        showFeedback(true, `成功獲取文物！目前已收集 ${state.extracted} 個。`);
+      } else {
+        playSound('wrong');
+        createParticles(state.targetRelic.x, state.targetRelic.y, '#ef4444', true);
+        state.targetRelic.active = false; 
+        showFeedback(false, `正確答案應為：${state.currentQ.ans}`);
+      }
+    }
+  }
+
+  function showFeedback(isCorrect, text) {
+    $('gameOverlay').style.display = 'flex';
+    $('feedbackModal').style.display = 'block';
+    $('qModal').style.display = 'none';
+
+    if(isCorrect) {
+      $('fIcon').innerHTML = '✅'; $('fIcon').className = 'feedback-icon correct';
+      $('fTitle').textContent = '挖掘成功！';
+      $('fTitle').style.color = '#10b981';
+    } else {
+      $('fIcon').innerHTML = '❌'; $('fIcon').className = 'feedback-icon wrong';
+      $('fTitle').textContent = '挖掘失敗！';
+      $('fTitle').style.color = '#ef4444';
+    }
+    $('fText').textContent = text;
+  }
+
+  function closeFeedback() {
+    $('gameOverlay').style.display = 'none';
+    $('feedbackModal').style.display = 'none';
+    answering = false;
+    
+    let activeCount = relics.filter(r => r.active).length;
+    if(activeCount < 5) {
+      initRelics();
+    }
+  }
+
+  function triggerWin() {
+    state.gameOver = true;
+    audioFiles.bgm.pause();
+    playSound('win');
+    saveScore('任務成功');
+    
+    $('gameOverlay').style.display = 'flex';
+    $('feedbackModal').style.display = 'none';
+    $('resultModal').style.display = 'block';
+    
+    $('rTitle').innerHTML = '🎉 任務成功！';
+    $('rTitle').style.color = '#10b981';
+    $('rText').textContent = `太棒了！您成功在時限內救出了 ${state.extracted} 個文物！這是您的榮譽徽章：`;
+    $('badgeImg').style.display = 'block';
+    $('rBtn').textContent = '返回首頁';
+    $('rBtn').className = 'btn btn-success';
+  }
+
+  function triggerLose() {
+    if(state.gameOver) return;
+    state.gameOver = true;
+    audioFiles.bgm.pause();
+    playSound('lose');
+    saveScore('任務失敗');
+
+    document.body.classList.add('shake-active');
+    relics.forEach(r => {
+      if(r.active) {
+        createParticles(r.x, r.y, '#8b5a2b', true);
+        r.active = false;
+      }
+    });
+
+    setTimeout(() => {
+      document.body.classList.remove('shake-active');
+      $('gameOverlay').style.display = 'flex';
+      $('qModal').style.display = 'none';
+      $('feedbackModal').style.display = 'none';
+      isWbActive = false; updateWhiteboardUI();
+      
+      $('resultModal').style.display = 'block';
+      $('rTitle').innerHTML = '💥 遺跡崩塌！';
+      $('rTitle').style.color = '#ef4444';
+      $('rText').textContent = `時間耗盡，僅搶救了 ${state.extracted} 個文物，未達 ${state.target} 個的標準，劇烈震動導致文物全數毀損...`;
+      $('badgeImg').style.display = 'none';
+      $('rBtn').textContent = '再挑戰一次';
+      $('rBtn').className = 'btn btn-danger';
+    }, 1500); 
+  }
+
+  function saveScore(status) {
+    let scores = JSON.parse(localStorage.getItem('relicRank') || '[]');
+    scores.push({
+      name: state.name, time: state.time, extracted: state.extracted, status: status,
+      date: new Date().toLocaleDateString('zh-TW')
+    });
+    scores.sort((a, b) => {
+      if(a.status === '任務成功' && b.status !== '任務成功') return -1;
+      if(b.status === '任務成功' && a.status !== '任務成功') return 1;
+      return (b.extracted || 0) - (a.extracted || 0);
+    });
+    localStorage.setItem('relicRank', JSON.stringify(scores.slice(0, 10)));
+  }
+
+  function toggleWhiteboard() {
+    isWbActive = !isWbActive;
+    updateWhiteboardUI();
+    if(!isWbActive) {
+      clearWhiteboard();
+    }
+  }
+
+  function updateWhiteboardUI() {
+    if(isWbActive) {
+      wb.style.display = 'block';
+      $('wbToggleBtn').classList.add('btn-wb-active');
+      $('wbToggleBtn').innerHTML = '<i class="fa-solid fa-eraser"></i> 關閉並清除';
+    } else {
+      wb.style.display = 'none';
+      $('wbToggleBtn').classList.remove('btn-wb-active');
+      $('wbToggleBtn').innerHTML = '<i class="fa-solid fa-pen"></i> 白板';
+    }
+  }
+
+  const getCoords = (e) => {
+    const rect = wb.getBoundingClientRect();
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX;
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  };
+
+  const isInteractive = (e) => {
+    const t = e.target;
+    return t.tagName === 'INPUT' || t.tagName === 'BUTTON' || t.closest('.btn') || t.closest('.hero-nav') || t.tagName === 'A';
+  };
+
+  document.addEventListener('mousedown', (e) => {
+    if(!isWbActive || isInteractive(e)) return;
+    e.preventDefault(); // 阻擋原生的反白與拖曳行為
+    isDrawing = true;
+    const pos = getCoords(e);
+    lastX = pos.x; lastY = pos.y;
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if(!isDrawing || !isWbActive) return;
+    const pos = getCoords(e);
+    wbCtx.beginPath();
+    wbCtx.moveTo(lastX, lastY); wbCtx.lineTo(pos.x, pos.y);
+    wbCtx.strokeStyle = '#facc15'; 
+    wbCtx.lineWidth = 4;
+    wbCtx.lineCap = 'round';
+    wbCtx.stroke();
+    lastX = pos.x; lastY = pos.y;
+  });
+
+  document.addEventListener('mouseup', () => isDrawing = false);
+
+  document.addEventListener('touchstart', (e) => {
+    if(!isWbActive || isInteractive(e)) return;
+    e.preventDefault(); 
+    isDrawing = true;
+    const pos = getCoords(e);
+    lastX = pos.x; lastY = pos.y;
+  }, {passive: false});
+
+  document.addEventListener('touchmove', (e) => {
+    if(!isDrawing || !isWbActive) return;
+    e.preventDefault();
+    const pos = getCoords(e);
+    wbCtx.beginPath();
+    wbCtx.moveTo(lastX, lastY); wbCtx.lineTo(pos.x, pos.y);
+    wbCtx.strokeStyle = '#facc15'; 
+    wbCtx.lineWidth = 4;
+    wbCtx.lineCap = 'round';
+    wbCtx.stroke();
+    lastX = pos.x; lastY = pos.y;
+  }, {passive: false});
+
+  document.addEventListener('touchend', () => isDrawing = false);
+
+  function clearWhiteboard() { wbCtx.clearRect(0, 0, wb.width, wb.height); }
+
+</script>
+</body>
+</html>
